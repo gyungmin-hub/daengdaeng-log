@@ -60,7 +60,7 @@ function analyzeWalkStyle(records) {
 
     const STYLES = [
         { max: 2, label: '산책 입문자형', emoji: '🌱', desc: '산책 습관을 만들어 가는 중이에요' },
-        { max: 4, label: '주말 탐방형', emoji: '🍃', desc: '가끔이지만 나름 즐기는 타입이에요' },
+        { max: 4, label: '소소한 탐방형', emoji: '🍃', desc: '가끔이지만 나름 즐기는 타입이에요' },
         { max: 6, label: '느긋한 산책형', emoji: '🐌', desc: '천천히 자기 페이스로 걷는 스타일이에요' },
         { max: 8, label: '꾸준한 거북이형', emoji: '🐢', desc: '빠르진 않아도 포기하지 않아요' },
         { max: 10, label: '균형잡힌 산책러', emoji: '⭐', desc: '빈도·시간·꾸준함 모두 안정적이에요' },
@@ -151,12 +151,22 @@ export default function DashboardScreen({ navigation }) {
     }
 
     const allTotalSec = records.reduce((sum, r) => sum + r.duration, 0);
-    const WALK_SPEED_KMH = 4;
-    const totalKm = Math.round((allTotalSec / 3600) * WALK_SPEED_KMH * 10) / 10;
-    const goal = Math.ceil(totalKm / 100) * 100 || 100;
-    const remaining = Math.round((goal - totalKm) * 10) / 10;
-    const goalPercent = Math.min(Math.round((totalKm / goal) * 100), 100);
+    const WALK_SPEED_KMH = 2;
 
+    // 이번 달 거리만 계산 (매월 리셋)
+    const now = new Date();
+    const thisMonthRecords = records.filter(r => {
+        const d = new Date(r.date);
+        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    });
+    const thisMonthSec = thisMonthRecords.reduce((sum, r) => sum + r.duration, 0);
+    const totalKm = Math.round((thisMonthSec / 3600) * WALK_SPEED_KMH * 10) / 10;
+
+    const MIN_GOAL = 20;
+    const MAX_GOAL = 40;
+    const goal = totalKm >= MIN_GOAL ? MAX_GOAL : MIN_GOAL;
+    const remaining = Math.max(Math.round((goal - totalKm) * 10) / 10, 0);
+    const goalPercent = Math.min(Math.round((totalKm / goal) * 100), 100);
     const monthRecords = records.filter(r => {
         const d = new Date(r.date);
         return d.getFullYear() === year && d.getMonth() === month;
@@ -297,9 +307,19 @@ export default function DashboardScreen({ navigation }) {
                             <View style={s.reportRow}>
                                 <Text style={s.reportIcon}>🏆</Text>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={s.reportLabel}>다음 목표까지</Text>
-                                    <Text style={s.reportValue}>{remaining} km 남았어요</Text>
-                                    <Text style={s.reportSub}>목표 {goal}km · 현재 {totalKm}km 누적</Text>
+                                    <Text style={s.reportLabel}>이번 달 산책 거리</Text>
+                                    <Text style={s.reportValue}>
+                                        {totalKm >= MAX_GOAL
+                                            ? '🏆 최대 목표 달성!'
+                                            : totalKm >= MIN_GOAL
+                                                ? `🎉 행복한 댕댕이에요! 최대까지 ${remaining}km`
+                                                : `${remaining}km 남았어요`}
+                                    </Text>
+                                    <Text style={s.reportSub}>
+                                        {totalKm >= MAX_GOAL
+                                            ? `${totalKm}km 달성 · 완벽한 한 달이에요!`
+                                            : `목표 ${goal}km · 현재 ${totalKm}km`}
+                                    </Text>
                                     <View style={s.progressBg}>
                                         <View style={[s.progressFill, { width: `${goalPercent}%` }]} />
                                     </View>
@@ -380,7 +400,7 @@ export default function DashboardScreen({ navigation }) {
                         <Text style={s.modalSub}>종합 점수 (빈도+시간+꾸준함) 기준</Text>
                         {[
                             { score: '3~4점', emoji: '🌱', label: '산책 입문자형', desc: '산책 습관을 만들어가는 중' },
-                            { score: '5~6점', emoji: '🍃', label: '주말 탐방형', desc: '가끔이지만 나름 즐기는 타입' },
+                            { score: '5~6점', emoji: '🍃', label: '소소한 산책형', desc: '가끔이지만 나름 즐기는 타입' },
                             { score: '7~8점', emoji: '🐌', label: '느긋한 산책형', desc: '자기 페이스로 천천히 걷는 스타일' },
                             { score: '9~10점', emoji: '🐢', label: '꾸준한 거북이형', desc: '빠르진 않아도 포기하지 않음' },
                             { score: '11~12점', emoji: '⭐', label: '균형잡힌 산책러', desc: '빈도·시간·꾸준함 모두 안정적' },

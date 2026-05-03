@@ -280,27 +280,17 @@ export default function HomeScreen({ navigation }) {
                   const walked = weekStats.walkedDays.includes(jsDay);
                   return (
                     <View key={label} style={s.dayItem}>
-                      {walked ? (
-                        <Image
-                          source={RECORD_ICON}
-                          style={{ width: 42, height: 42 }}
-                          resizeMode="contain"
-                        />
-                      ) : (
-                        <View style={{ width: 42, height: 42, alignItems: 'center', justifyContent: 'center' }}>
-                          <Image
-                            source={RECORD_ICON_EMPTY}
-                            style={{ width: 42, height: 42, opacity: 0.2 }}
-                            resizeMode="contain"
-                          />
-                          <Text style={{
-                            position: 'absolute',
-                            fontSize: 11,
-                            fontWeight: '700',
-                            color: '#CCCCCC',
-                          }}>{label}</Text>
-                        </View>
-                      )}
+                      <Image
+                        source={RECORD_ICON}
+                        style={{ width: 38, height: 38, opacity: walked ? 1 : 0.18 }}
+                        resizeMode="contain"
+                      />
+                      <Text style={{
+                        fontSize: 11,
+                        fontWeight: walked ? '800' : '500',
+                        color: walked ? INK : '#CCCCCC',
+                        marginTop: 0,
+                      }}>{label}</Text>
                     </View>
                   );
                 })}
