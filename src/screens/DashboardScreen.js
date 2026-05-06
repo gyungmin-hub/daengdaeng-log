@@ -59,15 +59,12 @@ function analyzeWalkStyle(records) {
     const total = freqScore + timeScore + consistencyScore;
 
     const STYLES = [
-        { max: 2, label: '산책 입문자형', emoji: '🌱', desc: '산책 습관을 만들어 가는 중이에요' },
-        { max: 4, label: '소소한 탐방형', emoji: '🍃', desc: '가끔이지만 나름 즐기는 타입이에요' },
-        { max: 6, label: '느긋한 산책형', emoji: '🐌', desc: '천천히 자기 페이스로 걷는 스타일이에요' },
-        { max: 8, label: '꾸준한 거북이형', emoji: '🐢', desc: '빠르진 않아도 포기하지 않아요' },
-        { max: 10, label: '균형잡힌 산책러', emoji: '⭐', desc: '빈도·시간·꾸준함 모두 안정적이에요' },
-        { max: 11, label: '활발한 댕댕형', emoji: '🐕', desc: '자주 나가고 신나게 즐기는 타입이에요' },
-        { max: 12, label: '열정 산책러형', emoji: '🔥', desc: '산책에 진심인 당신!' },
-        { max: 13, label: '마라토너형', emoji: '🏃', desc: '긴 시간 꾸준히, 체력 끝판왕이에요' },
-        { max: 14, label: '탐험가형', emoji: '🦁', desc: '매일 긴 탐험, 진정한 산책 고수예요' },
+        { max: 3, label: '산책 입문자형', emoji: '🌱', desc: '산책 습관을 만들어 가는 중이에요' },
+        { max: 5, label: '소소한 산책형', emoji: '🍃', desc: '작은 산책이지만 꾸준히 즐기는 타입이에요' },
+        { max: 8, label: '느긋한 산책형', emoji: '🐌', desc: '천천히 자기 페이스로 걷는 스타일이에요' },
+        { max: 10, label: '꾸준한 거북이형', emoji: '🐢', desc: '빠르진 않아도 포기하지 않아요' },
+        { max: 12, label: '균형잡힌 산책러', emoji: '⭐', desc: '빈도·시간·꾸준함 모두 안정적이에요' },
+        { max: 14, label: '열정 산책러형', emoji: '🔥', desc: '산책에 진심인 당신!' },
         { max: 15, label: '전설의 산책왕', emoji: '👑', desc: '완벽한 산책 습관의 소유자!' },
     ];
 
@@ -154,10 +151,9 @@ export default function DashboardScreen({ navigation }) {
     const WALK_SPEED_KMH = 2;
 
     // 이번 달 거리만 계산 (매월 리셋)
-    const now = new Date();
     const thisMonthRecords = records.filter(r => {
         const d = new Date(r.date);
-        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+        return d.getFullYear() === year && d.getMonth() === month;
     });
     const thisMonthSec = thisMonthRecords.reduce((sum, r) => sum + r.duration, 0);
     const totalKm = Math.round((thisMonthSec / 3600) * WALK_SPEED_KMH * 10) / 10;
@@ -307,18 +303,18 @@ export default function DashboardScreen({ navigation }) {
                             <View style={s.reportRow}>
                                 <Text style={s.reportIcon}>🏆</Text>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={s.reportLabel}>이번 달 산책 거리</Text>
+                                    <Text style={s.reportLabel}>이 달의 산책 거리</Text>
                                     <Text style={s.reportValue}>
                                         {totalKm >= MAX_GOAL
                                             ? '🏆 최대 목표 달성!'
                                             : totalKm >= MIN_GOAL
-                                                ? `🎉 행복한 댕댕이에요! 최대까지 ${remaining}km`
-                                                : `${remaining}km 남았어요`}
+                                                ? `🎉 행복한 댕댕이에요! ${totalKm}km 걸었어요`
+                                                : `${totalKm}km 걸었어요`}
                                     </Text>
                                     <Text style={s.reportSub}>
                                         {totalKm >= MAX_GOAL
                                             ? `${totalKm}km 달성 · 완벽한 한 달이에요!`
-                                            : `목표 ${goal}km · 현재 ${totalKm}km`}
+                                            : `목표 ${goal}km · ${remaining}km 남음`}
                                     </Text>
                                     <View style={s.progressBg}>
                                         <View style={[s.progressFill, { width: `${goalPercent}%` }]} />
@@ -353,7 +349,7 @@ export default function DashboardScreen({ navigation }) {
                                 </Text>
                             </View>
                             <View style={[s.statCard, { flex: 1 }]}>
-                                <Text style={s.statLabel}>월 평균 산책 시간</Text>
+                                <Text style={s.statLabel}>하루 평균 산책 시간</Text>
                                 <Text style={s.statValue}>
                                     {avgMin > 0 ? `${avgMin}분` : `${Math.floor(avgSec % 60)}초`}
                                 </Text>
@@ -399,16 +395,13 @@ export default function DashboardScreen({ navigation }) {
                         <Text style={s.modalTitle}>🐾 산책 스타일 가이드</Text>
                         <Text style={s.modalSub}>종합 점수 (빈도+시간+꾸준함) 기준</Text>
                         {[
-                            { score: '3~4점', emoji: '🌱', label: '산책 입문자형', desc: '산책 습관을 만들어가는 중' },
-                            { score: '5~6점', emoji: '🍃', label: '소소한 산책형', desc: '가끔이지만 나름 즐기는 타입' },
-                            { score: '7~8점', emoji: '🐌', label: '느긋한 산책형', desc: '자기 페이스로 천천히 걷는 스타일' },
+                            { score: '1~3점', emoji: '🌱', label: '산책 입문자형', desc: '산책 습관을 만들어가는 중' },
+                            { score: '4~5점', emoji: '🍃', label: '소소한 산책형', desc: '작은 산책이지만 꾸준히 즐기는 타입' },
+                            { score: '6~8점', emoji: '🐌', label: '느긋한 산책형', desc: '자기 페이스로 천천히 걷는 스타일' },
                             { score: '9~10점', emoji: '🐢', label: '꾸준한 거북이형', desc: '빠르진 않아도 포기하지 않음' },
                             { score: '11~12점', emoji: '⭐', label: '균형잡힌 산책러', desc: '빈도·시간·꾸준함 모두 안정적' },
-                            { score: '13점', emoji: '🐕', label: '활발한 댕댕형', desc: '자주 나가고 신나게 즐기는 타입' },
-                            { score: '14점', emoji: '🔥', label: '열정 산책러형', desc: '산책에 진심인 타입' },
-                            { score: '15점', emoji: '🏃', label: '마라토너형', desc: '긴 시간 꾸준히, 체력 끝판왕' },
-                            { score: '16점', emoji: '🦁', label: '탐험가형', desc: '매일 긴 탐험, 진정한 산책 고수' },
-                            { score: '17점', emoji: '👑', label: '전설의 산책왕', desc: '완벽한 산책 습관의 소유자' },
+                            { score: '13~14점', emoji: '🔥', label: '열정 산책러형', desc: '산책에 진심인 타입' },
+                            { score: '15점', emoji: '👑', label: '전설의 산책왕', desc: '완벽한 산책 습관의 소유자' },
                         ].map((item, i) => (
                             <View key={i} style={s.guideRow}>
                                 <Text style={s.guideEmoji}>{item.emoji}</Text>
